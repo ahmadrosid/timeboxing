@@ -3,7 +3,7 @@
   import Plus from "lucide-svelte/icons/plus";
   import Play from "lucide-svelte/icons/play";
   import Pause from "lucide-svelte/icons/pause";
-  import RotateCcw from "lucide-svelte/icons/rotate-ccw";
+  import Trash2 from "lucide-svelte/icons/trash-2";
 
   interface Task {
     name: string;
@@ -46,16 +46,18 @@
     isRunning = true;
   }
 
-  function resetTask(task: Task) {
-    if (activeTask && activeTask.id === task.id) {
+  function toggleTimer() {
+    isRunning = !isRunning;
+  }
+
+  function deleteTask(taskId: number) {
+    tasks = tasks.filter(task => task.id !== taskId);
+    if (activeTask && activeTask.id === taskId) {
       activeTask = null;
       timeLeft = 0;
       isRunning = false;
     }
-  }
-
-  function toggleTimer() {
-    isRunning = !isRunning;
+    saveTasks();
   }
 
   onMount(() => {
@@ -148,8 +150,8 @@
             <button on:click={() => startTask(task)} class="bg-transparent text-black font-bold py-2 px-2 rounded hover:text-gray-700">
               <Play class="h-4 w-4" />
             </button>
-            <button on:click={() => resetTask(task)} class="bg-transparent text-black font-bold py-2 px-2 rounded hover:text-gray-700">
-              <RotateCcw class="h-4 w-4" />
+            <button on:click={() => deleteTask(task.id)} class="bg-transparent text-black font-bold py-2 px-2 rounded hover:text-gray-700">
+              <Trash2 class="h-4 w-4" />
             </button>
           </div>
         </div>
