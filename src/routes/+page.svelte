@@ -12,12 +12,7 @@
     description: string;
   }
 
-  let tasks: Task[] = [
-    { name: "Project Planning", duration: 30, id: 1, description: "Plan the project scope and timeline" },
-    { name: "Design Phase", duration: 45, id: 2, description: "Create wireframes and high-fidelity designs" },
-    { name: "Development", duration: 60, id: 3, description: "Implement the project features and functionalities" },
-  ];
-
+  let tasks: Task[] = [];
   let newTask: Task = { name: "", duration: 0, id: 0, description: "" }; 
   let activeTask: Task | null = null;
   let timeLeft = 0;
@@ -26,10 +21,22 @@
   $: minutes = Math.floor(timeLeft / 60);
   $: remainingSeconds = timeLeft % 60;
 
+  function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  function loadTasks() {
+    const storedTasks = localStorage.getItem('tasks');
+    if (storedTasks) {
+      tasks = JSON.parse(storedTasks);
+    }
+  }
+
   function addTask() {
     if (newTask.name && newTask.duration) {
       tasks = [...tasks, { ...newTask, id: Date.now() }];
       newTask = { name: "", duration: 0, id: 0, description: "" };
+      saveTasks();
     }
   }
 
@@ -52,6 +59,7 @@
   }
 
   onMount(() => {
+    loadTasks();
     let interval: ReturnType<typeof setInterval>;
     return () => {
       if (interval) clearInterval(interval);
