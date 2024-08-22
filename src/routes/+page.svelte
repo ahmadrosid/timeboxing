@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import Plus from "lucide-svelte/icons/Plus";
-  import Play from "lucide-svelte/icons/Play";
-  import Pause from "lucide-svelte/icons/Pause";
+  import Plus from "lucide-svelte/icons/plus";
+  import Play from "lucide-svelte/icons/play";
+  import Pause from "lucide-svelte/icons/pause";
   import RotateCcw from "lucide-svelte/icons/rotate-ccw";
 
   interface Task {
