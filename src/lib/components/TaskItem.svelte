@@ -6,6 +6,15 @@
   export let startTask;
   export let deleteTask;
   export let markTaskAsDone;
+  export let timeLeft;
+  export let activeTask;
+
+  $: progress = 0;
+  if (task.status === 'in-progress' && activeTask && activeTask.id === task.id) {
+    progress = (1 - timeLeft / (task.duration * 60)) * 100;
+  } else if (task.status === 'done') {
+    progress = 100;
+  }
 </script>
 
 <div class="mb-4 p-4 rounded-lg shadow-lg bg-white border border-gray-500">
@@ -14,6 +23,12 @@
       <h3 class="font-semibold">{task.name}</h3>
       <p class="text-sm text-gray-500">{task.duration} minutes</p>
       <p class="text-sm text-gray-500">Status: {task.status}</p>
+      <div class="w-full h-2 bg-gray-200 rounded-full mt-2">
+        <div
+          class="h-2 bg-black rounded-full"
+          style="width: {progress}%;"
+        ></div>
+      </div>
     </div>
     <div class="flex gap-1">
       {#if task.status !== 'done'}

@@ -23,16 +23,35 @@
 
   function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
+    localStorage.setItem('activeTask', JSON.stringify(activeTask));
+    localStorage.setItem('timeLeft', JSON.stringify(timeLeft));
+    localStorage.setItem('isRunning', JSON.stringify(isRunning));
   }
 
   function loadTasks() {
     const storedTasks = localStorage.getItem('tasks');
+    const storedActiveTask = localStorage.getItem('activeTask');
+    const storedTimeLeft = localStorage.getItem('timeLeft');
+    const storedIsRunning = localStorage.getItem('isRunning');
+
     if (storedTasks) {
       tasks = JSON.parse(storedTasks).map((task: any) => ({
         ...task,
         status: task.status || 'todo'
       }));
       sortTasks();
+    }
+
+    if (storedActiveTask) {
+      activeTask = JSON.parse(storedActiveTask);
+    }
+
+    if (storedTimeLeft) {
+      timeLeft = JSON.parse(storedTimeLeft);
+    }
+
+    if (storedIsRunning) {
+      isRunning = JSON.parse(storedIsRunning);
     }
   }
 
@@ -55,6 +74,7 @@
 
   function toggleTimer() {
     isRunning = !isRunning;
+    saveTasks();
   }
 
   function deleteTask(taskId: number) {
@@ -101,6 +121,7 @@
         isRunning = false;
         activeTask = null;
       }
+      saveTasks();
     }, 1000);
   }
 </script>
@@ -115,7 +136,7 @@
   <div class="flex-1">
     <h2 class="text-xl font-bold mb-4">Tasks</h2>
     {#each tasks as task (task.id)}
-    <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} />
+    <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {timeLeft} {activeTask} />
     {/each}
   </div>
 </div>
