@@ -32,6 +32,7 @@
         ...task,
         status: task.status || 'todo'
       }));
+      sortTasks();
     }
   }
 
@@ -39,6 +40,7 @@
     if (newTask.name && newTask.duration) {
       tasks = [...tasks, { ...newTask, id: Date.now() }];
       newTask = { name: "", duration: 0, id: 0, description: "", status: 'todo' };
+      sortTasks();
       saveTasks();
     }
   }
@@ -72,7 +74,16 @@
       timeLeft = 0;
       isRunning = false;
     }
+    sortTasks();
     saveTasks();
+  }
+
+  function sortTasks() {
+    tasks = tasks.sort((a, b) => {
+      if (a.status === 'done' && b.status !== 'done') return 1;
+      if (a.status !== 'done' && b.status === 'done') return -1;
+      return 0;
+    });
   }
 
   onMount(() => {
