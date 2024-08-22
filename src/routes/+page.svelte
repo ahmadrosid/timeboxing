@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import TaskForm from "$lib/components/TaskForm.svelte";
-  import TaskList from "$lib/components/TaskList.svelte";
+  import TaskItem from "$lib/components/TaskItem.svelte";
   import ActiveTask from "$lib/components/ActiveTask.svelte";
 
   interface Task {
@@ -102,6 +102,9 @@
     {/if}
   </div>
   <div class="flex-1">
-    <TaskList {tasks} {startTask} {deleteTask} {markTaskAsDone} />
+    <h2 class="text-xl font-bold mb-4">Tasks</h2>
+    {#each tasks as task (task.id)}
+    <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} />
+    {/each}
   </div>
 </div>
