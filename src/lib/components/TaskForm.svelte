@@ -10,13 +10,13 @@
     <input
       placeholder="Task name"
       bind:value={newTask.name}
-      class="border border-gray-300 bg-white h-10 px-2 rounded-lg text-sm focus:outline-black"
+      class="border border-gray-500 bg-white h-10 px-2 rounded-lg text-sm focus:outline-black"
     />
     <input
       placeholder="Duration (min)"
       type="number"
       bind:value={newTask.duration}
-      class="border border-gray-300 bg-white h-10 px-2 rounded-lg text-sm focus:outline-black"
+      class="border border-gray-500 bg-white h-10 px-2 rounded-lg text-sm focus:outline-black"
     />
   </div>
   <div class="w-full">

@@ -8,7 +8,7 @@
   export let markTaskAsDone;
 </script>
 
-<div class="mb-4 p-4 rounded-lg shadow-lg bg-white border border-gray-300">
+<div class="mb-4 p-4 rounded-lg shadow-lg bg-white border border-gray-500">
   <div class="flex items-center justify-between">
     <div>
       <h3 class="font-semibold">{task.name}</h3>
