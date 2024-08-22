@@ -6,14 +6,14 @@
 
   interface Task {
     name: string;
-    duration: number;
+    duration: number | null;
     id: number;
     description: string;
     status: 'todo' | 'in-progress' | 'done';
   }
 
   let tasks: Task[] = [];
-  let newTask: Task = { name: "", duration: 0, id: 0, description: "", status: 'todo' }; 
+  let newTask: Task = { name: "", duration: null, id: 0, description: "", status: 'todo' }; 
   let activeTask: Task | null = null;
   let timeLeft = 0;
   let isRunning = false;
@@ -58,7 +58,7 @@
   function addTask() {
     if (newTask.name && newTask.duration) {
       tasks = [...tasks, { ...newTask, id: Date.now() }];
-      newTask = { name: "", duration: 0, id: 0, description: "", status: 'todo' };
+      newTask = { name: "", duration: null, id: 0, description: "", status: 'todo' };
       sortTasks();
       saveTasks();
     }
@@ -66,7 +66,7 @@
 
   function startTask(task: Task) {
     activeTask = task;
-    timeLeft = task.duration * 60;
+    timeLeft = task.duration ? (task.duration * 60) : 0;
     isRunning = true;
     task.status = 'in-progress';
     saveTasks();
