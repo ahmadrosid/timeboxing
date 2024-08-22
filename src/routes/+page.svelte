@@ -126,6 +126,18 @@
   }
 </script>
 
+<style>
+  .scrollable {
+    max-height: 95vh; /* Set the height to 80vh */
+    overflow-y: auto;
+    scrollbar-width: none; /* For Firefox */
+  }
+
+  .scrollable::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+  }
+</style>
+
 <div class="max-w-4xl mx-auto p-4 flex gap-4 flex-row justify-between">
   <div class="flex-1">
     <TaskForm {newTask} {addTask} />
@@ -135,8 +147,10 @@
   </div>
   <div class="flex-1">
     <h2 class="text-xl font-bold mb-4">Tasks</h2>
-    {#each tasks as task (task.id)}
-    <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {timeLeft} {activeTask} />
-    {/each}
+    <div class="scrollable">
+      {#each tasks as task (task.id)}
+        <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {timeLeft} {activeTask} />
+      {/each}
+    </div>
   </div>
 </div>
