@@ -10,10 +10,11 @@
     id: number;
     description: string;
     status: 'todo' | 'in-progress' | 'done';
+    date?: string; // Optional date field
   }
 
   let tasks: Task[] = [];
-  let newTask: Task = { name: "", duration: null, id: 0, description: "", status: 'todo' }; 
+  let newTask: Task = { name: "", duration: null, id: 0, description: "", status: 'todo', date: new Date().toISOString() }; 
   let activeTask: Task | null = null;
   let timeLeft = 0;
   let isRunning = false;
@@ -37,7 +38,8 @@
     if (storedTasks) {
       tasks = JSON.parse(storedTasks).map((task: any) => ({
         ...task,
-        status: task.status || 'todo'
+        status: task.status || 'todo',
+        date: task.date || new Date().toISOString() // Set default date if missing
       }));
       sortTasks();
     }
@@ -58,7 +60,7 @@
   function addTask() {
     if (newTask.name && newTask.duration) {
       tasks = [...tasks, { ...newTask, id: Date.now() }];
-      newTask = { name: "", duration: null, id: 0, description: "", status: 'todo' };
+      newTask = { name: "", duration: null, id: 0, description: "", status: 'todo', date: new Date().toISOString() };
       sortTasks();
       saveTasks();
     }

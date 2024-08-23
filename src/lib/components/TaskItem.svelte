@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Play from "lucide-svelte/icons/play";
+    import Play from "lucide-svelte/icons/play";
   import Trash2 from "lucide-svelte/icons/trash-2";
   import Check from "lucide-svelte/icons/check"; // Import the checkmark icon
   export let task;
@@ -15,13 +15,19 @@
   } else if (task.status === 'done') {
     progress = 100;
   }
+
+  const formattedDate = new Date(task.date).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 </script>
 
 <div class="mb-4 p-4 rounded-lg shadow-lg bg-white border border-gray-500">
     <div class="flex items-center justify-between">
         <div>
             <h3 class="font-semibold">{task.name}</h3>
-            <p class="text-sm text-gray-500">{task.duration} minutes</p>
+            <p class="text-sm text-gray-500">{formattedDate} - {task.duration} minutes</p>
             <p class="text-sm text-gray-500">Status: {task.status}</p>
         </div>
         <div class="flex gap-1">
