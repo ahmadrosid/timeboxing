@@ -130,7 +130,7 @@
 
 <style>
   .scrollable {
-    max-height: 95vh; /* Set the height to 80vh */
+    max-height: 90vh; /* Set the height to 80vh */
     overflow-y: auto;
     scrollbar-width: none; /* For Firefox */
   }
