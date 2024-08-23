@@ -35,20 +35,18 @@
                 <button on:click={() => startTask(task)} class="bg-transparent text-black font-bold py-2 px-2 rounded hover:text-blue-500">
                     <Play class="h-4 w-4" />
                 </button>
-            {/if}
-            <button on:click={() => deleteTask(task.id)} class="bg-transparent text-black font-bold py-2 px-2 rounded hover:text-red-500">
-                <Trash2 class="h-4 w-4" />
-            </button>
-            {#if task.status === 'in-progress'}
                 <button on:click={() => markTaskAsDone(task)} class="bg-transparent text-black font-bold py-2 px-2 rounded hover:text-green-500">
-                    <Check class="h-4 w-4" /> <!-- Use the checkmark icon here -->
+                    <Check class="h-4 w-4" />
                 </button>
             {/if}
             {#if task.status === 'done'}
                 <button disabled class="bg-transparent text-green-500 font-bold py-2 px-2 rounded">
-                    <Check class="h-4 w-4" /> <!-- Use the checkmark icon here -->
+                    <Check class="h-4 w-4" />
                 </button>
             {/if}
+            <button on:click={() => deleteTask(task.id)} class="bg-transparent text-black font-bold py-2 px-2 rounded hover:text-red-500">
+                <Trash2 class="h-4 w-4" />
+            </button>
         </div>
     </div>
 
