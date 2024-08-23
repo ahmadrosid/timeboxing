@@ -8,6 +8,7 @@
 
   $: minutes = Math.floor(timeLeft / 60);
   $: remainingSeconds = timeLeft % 60;
+  $: progress = (1 - timeLeft / (activeTask.duration * 60)) * 100;
 </script>
 
 <div class="mb-6 p-4 rounded-lg shadow-lg bg-white border border-gray-500">
@@ -19,7 +20,7 @@
     <div class="w-full h-2 bg-gray-200 rounded-full">
       <div
         class="h-2 bg-black rounded-full"
-        style="width: {(1 - timeLeft / (activeTask.duration * 60)) * 100}%;"
+        style="width: {progress}%;"
       ></div>
     </div>
   </div>
