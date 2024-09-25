@@ -9,8 +9,8 @@
     duration: number | null;
     id: number;
     description: string;
-    status: 'todo' | 'in-progress' | 'done';
-    date?: string; // Optional date field
+    status: 'todo' | 'in-progress' | 'paused' | 'done';
+    date: string;
   }
 
   let tasks: Task[] = [];
@@ -39,7 +39,7 @@
       tasks = JSON.parse(storedTasks).map((task: any) => ({
         ...task,
         status: task.status || 'todo',
-        date: task.date || new Date().toISOString() // Set default date if missing
+        date: task.date || new Date().toISOString()
       }));
       sortTasks();
     }
@@ -67,16 +67,26 @@
   }
 
   function startTask(task: Task) {
+    if (activeTask && activeTask.id !== task.id) {
+      return toggleTimer();
+    }
     activeTask = task;
-    timeLeft = task.duration ? (task.duration * 60) : 0;
+    timeLeft = task.status === 'paused' ? timeLeft : (task.duration ? task.duration * 60 : 0);
     isRunning = true;
     task.status = 'in-progress';
     saveTasks();
   }
 
   function toggleTimer() {
-    isRunning = !isRunning;
-    saveTasks();
+    if (activeTask) {
+      isRunning = !isRunning;
+      activeTask.status = isRunning ? 'in-progress' : 'paused';
+      saveTasks();
+    }
+  }
+
+  function pauseTask(task: Task) {
+    toggleTimer();
   }
 
   function deleteTask(taskId: number) {
@@ -121,6 +131,9 @@
       timeLeft -= 1;
       if (timeLeft === 0) {
         isRunning = false;
+        if (activeTask) {
+          activeTask.status = 'done';
+        }
         activeTask = null;
       }
       saveTasks();
@@ -130,13 +143,13 @@
 
 <style>
   .scrollable {
-    max-height: 90vh; /* Set the height to 80vh */
+    max-height: 90vh;
     overflow-y: auto;
-    scrollbar-width: none; /* For Firefox */
+    scrollbar-width: none;
   }
 
   .scrollable::-webkit-scrollbar {
-    display: none; /* For Chrome, Safari, and Opera */
+    display: none;
   }
 </style>
 
@@ -151,7 +164,7 @@
     <h2 class="text-xl font-bold mb-4">Tasks</h2>
     <div class="scrollable">
       {#each tasks as task (task.id)}
-        <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {timeLeft} {activeTask} />
+        <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {pauseTask} />
       {/each}
     </div>
   </div>
