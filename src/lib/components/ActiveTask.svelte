@@ -1,14 +1,50 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte';
   import Play from "lucide-svelte/icons/play";
   import Pause from "lucide-svelte/icons/pause";
+  
   export let activeTask;
-  export let timeLeft;
-  export let isRunning;
+  export let timeLeft: number;
+  export let isRunning: boolean;
   export let toggleTimer;
+
+  let lastUpdateTime: number;
+  let animationFrameId: number;
 
   $: minutes = Math.floor(timeLeft / 60);
   $: remainingSeconds = timeLeft % 60;
   $: progress = (1 - timeLeft / (activeTask.duration * 60)) * 100;
+
+  function updateTimer() {
+    if (isRunning) {
+      const now = Date.now();
+      const delta = (now - lastUpdateTime) / 1000;
+      timeLeft = Math.max(0, timeLeft - delta);
+      lastUpdateTime = now;
+    }
+    
+    if (timeLeft > 0 && isRunning) {
+      animationFrameId = requestAnimationFrame(updateTimer);
+    }
+  }
+
+  function handleVisibilityChange() {
+    if (!document.hidden && isRunning) {
+      lastUpdateTime = Date.now();
+      updateTimer();
+    }
+  }
+
+  onMount(() => {
+    lastUpdateTime = Date.now();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    updateTimer();
+  });
+
+  onDestroy(() => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    cancelAnimationFrame(animationFrameId);
+  });
 </script>
 
 <div class="mb-6 p-4 rounded-lg shadow-lg bg-white border border-gray-500">
