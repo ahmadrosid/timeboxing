@@ -153,19 +153,34 @@
   }
 </style>
 
-<div class="max-w-4xl mx-auto p-4 flex gap-4 flex-row justify-between">
-  <div class="flex-1">
+<div class="container mx-auto p-4 flex gap-6 flex-row">
+  <div class="w-full max-w-md">
     <TaskForm {newTask} {addTask} />
     {#if activeTask}
       <ActiveTask {activeTask} {timeLeft} {isRunning} {toggleTimer} />
     {/if}
   </div>
-  <div class="flex-1">
+  <div class="w-full max-w-md">
     <h2 class="text-xl font-bold mb-4">Tasks</h2>
     <div class="scrollable">
-      {#each tasks as task (task.id)}
+      {#each tasks.filter(task => task.status !== 'done') as task (task.id)}
         <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {pauseTask} />
       {/each}
+      {#if tasks.filter(task => task.status !== 'done').length === 0}
+        <div class="text-gray-900 text-sm">No tasks added yet</div>
+      {/if}
+    </div>
+  </div>
+  <div class="w-full max-w-md">
+    <h2 class="text-xl font-bold mb-4">Finished Tasks</h2>
+    <div class="scrollable">
+      {#each tasks.filter(task => task.status === 'done') as task (task.id)}
+        <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {pauseTask} />
+      {/each}
+
+      {#if tasks.filter(task => task.status === 'done').length === 0}
+        <div class="text-gray-900 text-sm">No finished tasks yet</div>
+      {/if}
     </div>
   </div>
 </div>
