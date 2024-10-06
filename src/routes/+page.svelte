@@ -161,7 +161,10 @@
     {/if}
   </div>
   <div class="w-full max-w-md">
-    <h2 class="text-xl font-bold mb-4">Tasks</h2>
+    <h2 class="text-xl font-bold mb-4">
+      Tasks
+      <span class="font-light">({tasks.filter(task => task.status !== 'done').reduce((acc, task) => acc + task.duration!, 0)} minutes)</span>
+    </h2>
     <div class="scrollable">
       {#each tasks.filter(task => task.status !== 'done') as task (task.id)}
         <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {pauseTask} />
@@ -172,7 +175,10 @@
     </div>
   </div>
   <div class="w-full max-w-md">
-    <h2 class="text-xl font-bold mb-4">Finished Tasks</h2>
+    <h2 class="text-xl font-bold mb-4">
+      Finished Tasks
+      <span class="font-light">({tasks.filter(task => task.status === 'done').reduce((acc, task) => acc + task.duration!, 0)} minutes)</span>
+    </h2>
     <div class="scrollable">
       {#each tasks.filter(task => task.status === 'done') as task (task.id)}
         <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {pauseTask} />
