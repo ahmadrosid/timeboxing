@@ -15,7 +15,7 @@
   }
 
   let tasks: Task[] = [];
-  let newTask: Task = { name: "", duration: null, id: 0, description: "", status: 'todo', date: new Date().toISOString() }; 
+  let newTask: Task = { name: "", duration: null, id: Date.now(), description: "", status: 'todo', date: new Date().toISOString() }; 
   let activeTask: Task | null = null;
   let timeLeft = 0;
   let isRunning = false;
@@ -152,6 +152,45 @@
     saveTasks();
   }
 
+  // New function to export tasks
+  function exportTasks() {
+    const tasksToExport = JSON.stringify(tasks, null, 2);
+    const blob = new Blob([tasksToExport], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tasks.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // New function to import tasks
+  function importTasks(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const content = e.target?.result as string;
+        try {
+          const importedTasks = JSON.parse(content);
+          tasks = importedTasks.map((task: any) => ({
+            ...task,
+            status: task.status || 'todo',
+            date: task.date || new Date().toISOString()
+          }));
+          sortTasks();
+          applyFilter(selectedFilter);
+          saveTasks();
+        } catch (error) {
+          console.error('Error parsing imported tasks:', error);
+          alert('Invalid file format. Please select a valid JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    }
+  }
+
   onMount(() => {
     loadTasks();
     let interval: ReturnType<typeof setInterval>;
@@ -190,7 +229,7 @@
 
 <div class="container mx-auto p-4 flex gap-6 flex-row">
   <div class="w-full max-w-md">
-    <TaskForm {newTask} {addTask} />
+    <TaskForm {newTask} {addTask} {exportTasks} {importTasks} />
     {#if activeTask}
       <ActiveTask {activeTask} {timeLeft} {isRunning} {toggleTimer} />
     {/if}
@@ -218,7 +257,6 @@
       <Dropdown
         options={filterFinishedTasks}
         selectedOption={selectedFilter}
-        placeholder="Filter"
         on:select={handleSelect}
       />
     </div>

@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
 
   export let options: string[] = [];
   export let selectedOption: string = "";
-  export let placeholder: string = "Select an option";
 
   let isOpen: boolean = false;
+  let dropdownRef: HTMLElement;
 
   const dispatch = createEventDispatcher<{
     select: string;
@@ -20,21 +20,52 @@
     isOpen = false;
     dispatch("select", option);
   }
+
+  function handleClickOutside(event: MouseEvent) {
+    if (dropdownRef && !dropdownRef.contains(event.target as Node) && isOpen) {
+      isOpen = false;
+    }
+  }
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === "Escape" && isOpen) {
+      isOpen = false;
+    }
+  }
+
+  onMount(() => {
+    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("keydown", handleKeydown);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("keydown", handleKeydown);
+    };
+  });
 </script>
 
-<div class="relative inline-block text-left">
+<div class="relative inline-block text-left" bind:this={dropdownRef}>
   <div>
     <button
       type="button"
       on:click={toggleDropdown}
-      class="inline-flex iterms-center justify-center w-full pl-4 bg-transparent text-base pt-3"
+      class="inline-flex items-center justify-center w-full pl-4 bg-transparent text-base pt-2 pr-1 focus:outline-none"
       aria-haspopup="true"
       aria-expanded={isOpen}
     >
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="size-4"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+        />
       </svg>
-      
     </button>
   </div>
 
