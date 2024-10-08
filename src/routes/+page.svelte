@@ -19,15 +19,16 @@
   let activeTask: Task | null = null;
   let timeLeft = 0;
   let isRunning = false;
-
-  $: minutes = Math.floor(timeLeft / 60);
-  $: remainingSeconds = timeLeft % 60;
+  let finishedTasks: Task[] = [];
+  let filterFinishedTasks: string[] = ['Today', 'This Month', 'All Time'];
+  let selectedFilter: string = 'All Time';
 
   function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
     localStorage.setItem('activeTask', JSON.stringify(activeTask));
     localStorage.setItem('timeLeft', JSON.stringify(timeLeft));
     localStorage.setItem('isRunning', JSON.stringify(isRunning));
+    localStorage.setItem('selectedFilter', selectedFilter);
   }
 
   function loadTasks() {
@@ -35,6 +36,7 @@
     const storedActiveTask = localStorage.getItem('activeTask');
     const storedTimeLeft = localStorage.getItem('timeLeft');
     const storedIsRunning = localStorage.getItem('isRunning');
+    const storedSelectedFilter = localStorage.getItem('selectedFilter');
 
     if (storedTasks) {
       tasks = JSON.parse(storedTasks).map((task: any) => ({
@@ -56,6 +58,12 @@
     if (storedIsRunning) {
       isRunning = JSON.parse(storedIsRunning);
     }
+
+    if (storedSelectedFilter) {
+      selectedFilter = JSON.parse(storedSelectedFilter);
+    }
+
+    applyFilter(selectedFilter);
   }
 
   function addTask() {
@@ -63,6 +71,7 @@
       tasks = [...tasks, { ...newTask, id: Date.now() }];
       newTask = { name: "", duration: null, id: 0, description: "", status: 'todo', date: new Date().toISOString() };
       sortTasks();
+      applyFilter(selectedFilter);
       saveTasks();
     }
   }
@@ -97,6 +106,7 @@
       timeLeft = 0;
       isRunning = false;
     }
+    applyFilter(selectedFilter);
     saveTasks();
   }
 
@@ -108,6 +118,7 @@
       isRunning = false;
     }
     sortTasks();
+    applyFilter(selectedFilter);
     saveTasks();
   }
 
@@ -117,6 +128,28 @@
       if (a.status !== 'done' && b.status === 'done') return -1;
       return 0;
     });
+  }
+
+  function applyFilter(filter: string) {
+    const today = new Date().toISOString().slice(0, 10);
+    const doneTasks = tasks.filter(task => task.status === 'done');
+
+    switch (filter) {
+      case 'Today':
+        finishedTasks = doneTasks.filter(task => task.date.slice(0, 10) === today);
+        break;
+      case 'This Month':
+        finishedTasks = doneTasks.filter(task => task.date.slice(0, 7) === today.slice(0, 7));
+        break;
+      default: // 'All Time'
+        finishedTasks = doneTasks;
+    }
+    selectedFilter = filter;
+  }
+
+  function handleSelect(event: CustomEvent<string>) {
+    applyFilter(event.detail);
+    saveTasks();
   }
 
   onMount(() => {
@@ -134,32 +167,12 @@
         isRunning = false;
         if (activeTask) {
           activeTask.status = 'done';
+          applyFilter(selectedFilter);
         }
         activeTask = null;
       }
       saveTasks();
     }, 1000);
-  }
-
-  $: finishedTask = tasks.filter(task => task.status === 'done');
-
-  let filterFinishedTasks: string[] = ['Today', 'This Month', 'All Time'];
-  let selected: string = '';
-
-  function handleSelect(event: CustomEvent<string>) {
-    const today = new Date().toISOString().slice(0, 10);
-    const doneTasks = tasks.filter(task => task.status === 'done');
-
-    switch (event.detail) {
-      case 'Today':
-        finishedTask = doneTasks.filter(task => task.date.slice(0, 10) === today);
-        break;
-      case 'This Month':
-        finishedTask = doneTasks.filter(task => task.date.slice(0, 7) === today.slice(0, 7));
-        break;
-      default: // 'All Time'
-        finishedTask = doneTasks;
-    }
   }
 </script>
 
@@ -200,22 +213,22 @@
     <div class="flex justify-between items-center mb-2">
       <h2 class="text-xl font-bold">
         Finished Tasks
-        <span class="font-light">({finishedTask.reduce((acc, task) => acc + task.duration!, 0)} minutes)</span>
+        <span class="font-light">({finishedTasks.reduce((acc, task) => acc + task.duration!, 0)} minutes)</span>
       </h2>
       <Dropdown
         options={filterFinishedTasks}
-        selectedOption={selected}
+        selectedOption={selectedFilter}
         placeholder="Filter"
         on:select={handleSelect}
       />
     </div>
     
     <div class="scrollable">
-      {#each finishedTask as task (task.id)}
+      {#each finishedTasks as task (task.id)}
         <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {pauseTask} />
       {/each}
 
-      {#if finishedTask.length === 0}
+      {#if finishedTasks.length === 0}
         <div class="text-gray-900 text-sm">No finished tasks yet</div>
       {/if}
     </div>
