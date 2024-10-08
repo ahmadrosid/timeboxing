@@ -3,6 +3,7 @@
   import TaskForm from "$lib/components/TaskForm.svelte";
   import TaskItem from "$lib/components/TaskItem.svelte";
   import ActiveTask from "$lib/components/ActiveTask.svelte";
+  import Dropdown from "$lib/components/Dropdown.svelte";
 
   interface Task {
     name: string;
@@ -139,6 +140,27 @@
       saveTasks();
     }, 1000);
   }
+
+  $: finishedTask = tasks.filter(task => task.status === 'done');
+
+  let filterFinishedTasks: string[] = ['Today', 'This Month', 'All Time'];
+  let selected: string = '';
+
+  function handleSelect(event: CustomEvent<string>) {
+    const today = new Date().toISOString().slice(0, 10);
+    const doneTasks = tasks.filter(task => task.status === 'done');
+
+    switch (event.detail) {
+      case 'Today':
+        finishedTask = doneTasks.filter(task => task.date.slice(0, 10) === today);
+        break;
+      case 'This Month':
+        finishedTask = doneTasks.filter(task => task.date.slice(0, 7) === today.slice(0, 7));
+        break;
+      default: // 'All Time'
+        finishedTask = doneTasks;
+    }
+  }
 </script>
 
 <style>
@@ -175,16 +197,25 @@
     </div>
   </div>
   <div class="w-full max-w-md">
-    <h2 class="text-xl font-bold mb-4">
-      Finished Tasks
-      <span class="font-light">({tasks.filter(task => task.status === 'done').reduce((acc, task) => acc + task.duration!, 0)} minutes)</span>
-    </h2>
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-xl font-bold">
+        Finished Tasks
+        <span class="font-light">({finishedTask.reduce((acc, task) => acc + task.duration!, 0)} minutes)</span>
+      </h2>
+      <Dropdown
+        options={filterFinishedTasks}
+        selectedOption={selected}
+        placeholder="Filter"
+        on:select={handleSelect}
+      />
+    </div>
+    
     <div class="scrollable">
-      {#each tasks.filter(task => task.status === 'done') as task (task.id)}
+      {#each finishedTask as task (task.id)}
         <TaskItem {task} {startTask} {deleteTask} {markTaskAsDone} {pauseTask} />
       {/each}
 
-      {#if tasks.filter(task => task.status === 'done').length === 0}
+      {#if finishedTask.length === 0}
         <div class="text-gray-900 text-sm">No finished tasks yet</div>
       {/if}
     </div>
