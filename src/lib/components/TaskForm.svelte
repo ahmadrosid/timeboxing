@@ -28,6 +28,12 @@
       }
     }
   }
+
+  function validateDuration(value: string): number {
+    const parsedValue = parseInt(value, 10);
+    return isNaN(parsedValue) || parsedValue < 0 ? 0 : parsedValue;
+  }
+  
 </script>
 
 <div class="mb-6 space-y-2">
@@ -54,6 +60,7 @@
       placeholder="Duration (min)"
       type="number"
       bind:value={newTask.duration}
+      on:input={(e) => newTask.duration = validateDuration(e.currentTarget.value)}
       class="h-10 px-2 rounded-lg text-sm focus:outline-none"
     />
     <div class="flex justify-end">
