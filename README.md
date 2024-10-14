@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./static/timeboxing-logo.png" alt="Timeboxing Logo" />
+  <img src="./static/timeboxing-demo.png" alt="Timeboxing demo" />
 </p>
 
 # Timeboxing
