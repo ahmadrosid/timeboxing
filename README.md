@@ -1,10 +1,10 @@
+# Timeboxing
+
 <p align="center">
   <img src="./static/timeboxing-demo.png" alt="Timeboxing demo" />
 </p>
 
-# Timeboxing
-
-The Timeboxing app is a web application that runs in your browser only.
+The Timeboxing app is a web-based application that runs exclusively in your browser.
 
 ## Developing
 
