@@ -22,7 +22,7 @@
   let isRunning = false;
   let finishedTasks: Task[] = [];
   let filterFinishedTasks: string[] = ['Today', 'This Month', 'All Time'];
-  let selectedFilter: string = 'All Time';
+  let selectedFilter: string = 'Today';
 
   function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
