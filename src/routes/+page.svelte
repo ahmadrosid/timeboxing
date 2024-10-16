@@ -12,6 +12,7 @@
     description: string;
     status: 'todo' | 'in-progress' | 'paused' | 'done';
     date: string;
+    remainingTime?: number;
   }
 
   let tasks: Task[] = [];
@@ -78,10 +79,20 @@
 
   function startTask(task: Task) {
     if (activeTask && activeTask.id !== task.id) {
-      return toggleTimer();
+      // Save remaining time of the current active task if it's being paused
+      activeTask.remainingTime = timeLeft;
+      activeTask.status = 'paused';
     }
+
     activeTask = task;
-    timeLeft = task.status === 'paused' ? timeLeft : (task.duration ? task.duration * 60 : 0);
+
+    // Set timeLeft based on task status
+    if (task.status === 'paused' && task.remainingTime !== undefined) {
+      timeLeft = task.remainingTime;
+    } else {
+      timeLeft = task.duration ? task.duration * 60 : 0;
+    }
+
     isRunning = true;
     task.status = 'in-progress';
     saveTasks();
@@ -96,7 +107,12 @@
   }
 
   function pauseTask(task: Task) {
-    toggleTimer();
+    if (activeTask && activeTask.id === task.id) {
+      task.remainingTime = timeLeft;
+      isRunning = false;
+      task.status = 'paused';
+      saveTasks();
+    }
   }
 
   function deleteTask(taskId: number) {
@@ -152,7 +168,6 @@
     saveTasks();
   }
 
-  // New function to export tasks
   function exportTasks() {
     const tasksToExport = JSON.stringify(tasks, null, 2);
     const blob = new Blob([tasksToExport], { type: 'application/json' });
@@ -164,7 +179,6 @@
     URL.revokeObjectURL(url);
   }
 
-  // New function to import tasks
   function importTasks(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
